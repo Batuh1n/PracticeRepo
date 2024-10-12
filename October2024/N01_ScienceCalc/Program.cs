@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 
 
-namespace ScienceCalc;
+namespace NO1_ScienceCalc;
 
 class Calculation
 {
@@ -39,13 +39,13 @@ class Calculation
         string? result = null;
         switch (oper)
         {
-            case "+": result = (firstNum + secondNum).ToString();
+            case "+": result = (firstNum + secondNum).ToString(CultureInfo.InvariantCulture);
                 break;
-            case "-": result = (firstNum - secondNum).ToString();
+            case "-": result = (firstNum - secondNum).ToString(CultureInfo.InvariantCulture);
                 break;
-            case "*": result = (firstNum * secondNum).ToString();
+            case "*": result = (firstNum * secondNum).ToString(CultureInfo.InvariantCulture);
                 break;
-            case "/": result = (firstNum / secondNum).ToString();
+            case "/": result = (firstNum / secondNum).ToString(CultureInfo.InvariantCulture);
                 break;
             case "^": result = (Math.Pow(firstNum, secondNum)).ToString(CultureInfo.InvariantCulture);
                 break;
@@ -74,6 +74,7 @@ class Calculation
         Stack<String> infix = new Stack<String>(Tokenize(inp));
         Stack<String> output  = new Stack<string>();
         Stack<String> opStack = new Stack<string>();
+        bool atLeastOne = false;
         foreach (String token in infix)
         {
             if (double.TryParse(token, out _))
@@ -82,8 +83,7 @@ class Calculation
             }
             else if (opDict.ContainsKey(token))
             {
-                String o2;
-                o2 = null;
+                String? o2 = null;
                 if (opStack.Count != 0)
                 {
                     o2 = opStack.Peek();
@@ -102,12 +102,19 @@ class Calculation
             else if (token == "(")
             {
                 opStack.Push(token);
+                atLeastOne = true;
             }
             else if (token == ")")
             {
                 bool found = false;
+                if (!atLeastOne)
+                {
+                    Console.WriteLine("Mismatching/Wrong paranthesis!!!!! pls DO it right.");
+                    AskAndCalculate();
+                }
                 while (!found)
                 {
+
                     if (opStack.Peek() != "(" && opStack.Count != 0)
                     {
                         output.Push(opStack.Pop());
@@ -117,12 +124,12 @@ class Calculation
                         opStack.Pop();
                         found = true;
                     }
-
                     if (opStack.Count == 0 && found == false)
                     {
-                        Console.WriteLine("Mismatching parenthesis!! pls enter again");
+                        Console.WriteLine("mismatching parenthesis!! pls enter again");
                         AskAndCalculate();
                     }
+                    
                 }
             }
             
@@ -132,7 +139,7 @@ class Calculation
         {
             if (opStack.Peek() == "(" || opStack.Peek() == ")")
             {
-                Console.WriteLine("Mismatching parenthesis!! pls enter again");
+                Console.WriteLine("those paranthesises are kinda wrooong, pls enter again");
                 AskAndCalculate();
             }
             output.Push(opStack.Pop());
@@ -144,7 +151,7 @@ class Calculation
     
     public static Stack<String> Tokenize(string inp)
     {
-        var tokenList = new List<String>();
+        List<string> tokenList;
             tokenList = Regex.Split(inp, @"\s*([-+/*)(])\s*")
                 .Where(n => !string.IsNullOrEmpty(n))
                 .ToList();
