@@ -27,13 +27,13 @@ public class Game
     private ConsoleKey _ckey;
     private Coord _cdirection;
     private bool _stop;
-    private bool _gameover = false;
+    private bool _gameover;
     private LinkedList<Coord> _snakeCoords;
     private Coord _foodposition;
     public int Score;
     private float _gamespeed;
 
-    private readonly Dictionary<ConsoleKey, Coord> _movementKeys = new Dictionary<ConsoleKey, Coord>()
+    private readonly Dictionary<ConsoleKey, Coord> _movementKeys = new()
     {
         { ConsoleKey.A, new(-1, 0) },
         { ConsoleKey.D, new(1, 0) },
@@ -47,7 +47,7 @@ public class Game
         _height = height;
         _gamespeed = gamespeed;
         _snakeCoords = new LinkedList<Coord>();
-        _snakeCoords.AddFirst(new Coord(_width, _height/2));
+        _snakeCoords.AddFirst(new Coord(_width/2, _height/2));
         SetGrid();
         InputHandler().Start();
         GenerateFood();
@@ -78,7 +78,7 @@ public class Game
             }
         }
 
-        foreach (var pos in _snakeCoords)
+        foreach (Coord pos in _snakeCoords)
         {
             Drawing.DrawSn(pos, ConsoleColor.Green);
         }
@@ -87,40 +87,52 @@ public class Game
     private Thread InputHandler() =>
         new(() =>
         {
-            while (!_stop)
+            while (!_gameover)
             {
-                _ckey = Console.ReadKey(true).Key;
-                if (_ckey == ConsoleKey.Q) //Stops The Game
+                while (!_stop)
                 {
-                    _stop = true;
-                    break;
-                }
-
-                if (!(_movementKeys[_ckey] + _cdirection == new Coord(0, 0)))
-                {
-                    _cdirection = _movementKeys[_ckey];
-                }
-            }
-
-            ConsoleKey inp2;
-            while (_stop && !_gameover)
-            {
-                Console.SetCursorPosition(_width*2+1, 1);
-                Console.Write("You have paused the game.\nIf you wish to continue, press Q again or R to restart.");
-                do
-                {
-                    inp2 = Console.ReadKey(true).Key;
-                    if (inp2 == ConsoleKey.Q)
+                    _ckey = Console.ReadKey(true).Key;
+                    if (_ckey == ConsoleKey.Q) //Stops The Game
                     {
-                        CleanConsole.ClearConsoleLine();
-                        _stop = false;
+                        _stop = true;
                         break;
                     }
-                    if (inp2 == ConsoleKey.R)
+
+                    if (_movementKeys.TryGetValue(_ckey, out Coord keydirection))
                     {
-                        NewGame();
+                        if (!(keydirection + _cdirection == new Coord(0, 0)))
+                        {
+                            _cdirection = _movementKeys[_ckey];
+                        }
                     }
-                } while (inp2 is not (ConsoleKey.Q or ConsoleKey.R));
+                }
+
+                ConsoleKey inp2;
+                while (_stop && !_gameover)
+                {
+                    ConsoleColor foreground = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.SetCursorPosition(_width*2+1, 1);
+                    Console.Write("You have paused the game.");
+                    Console.SetCursorPosition(_width*2+1, 2);
+                    Console.Write("If you wish to continue, press Q again or R to restart.");
+                    Console.ForegroundColor = foreground;
+                    do
+                    {
+                        inp2 = Console.ReadKey(true).Key;
+                        if (inp2 == ConsoleKey.Q)
+                        {
+                            CleanConsole.ClearConsoleLine(_width*2+1, 1);
+                            CleanConsole.ClearConsoleLine(_width * 2 + 1, 2);
+                            _stop = false;
+                            break;
+                        }
+                        if (inp2 == ConsoleKey.R)
+                        {
+                            NewGame();
+                        }
+                    } while (inp2 is not (ConsoleKey.Q or ConsoleKey.R));
+                }
             }
 
             while (_gameover)
@@ -136,22 +148,41 @@ public class Game
     private void GenerateFood()
     {
         Random food = new Random();
-        _foodposition = new Coord(food.Next(1, _width-1), food.Next(1, _height-1));
+        Coord foodposition;
+        do
+        {
+            foodposition = new Coord(food.Next(1, _width - 1), food.Next(1, _height - 1));
+        } while (_snakeCoords.Contains(foodposition));
+        _foodposition = foodposition;
         Drawing.DrawSn(_foodposition, ConsoleColor.DarkMagenta);
     }
 
     private void RefreshScore()
     {
-        Console.SetCursorPosition(_width*2+6, 0);
-        CleanConsole.ClearConsoleLine(_width*2+6);
-        Console.Write(Score);
+        ConsoleColor foreground = Console.ForegroundColor;
+        Console.SetCursorPosition(_width*2, 0);
+        CleanConsole.ClearConsoleLine(_width*2);
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write($"Score:{Score}");
+        Console.ForegroundColor = foreground;
     }
 
     private void NextPosition()
     {
-        _snakeCoords.AddFirst(_snakeCoords.First.Value + _cdirection);
-        if (_snakeCoords.First.Value.X == (0 | 1 | _width*2 - 1 | _width*2) || _snakeCoords.First.Value.Y == (0 | _height))
+        if (_cdirection != new Coord(0, 0))
         {
+            if (_snakeCoords.Contains(_snakeCoords.First.Value + _cdirection))
+            {
+                Drawing.DrawSn(_snakeCoords.First.Value, ConsoleColor.DarkRed);
+                GameOver();
+                return;
+            }   
+        }
+        _snakeCoords.AddFirst(_snakeCoords.First.Value + _cdirection);
+        if (_snakeCoords.First.Value.X <= 0 || _snakeCoords.First.Value.X >= _width-1||
+            _snakeCoords.First.Value.Y <= 0 || _snakeCoords.First.Value.Y >= _height)
+        {
+            Drawing.DrawSn(_snakeCoords.First.Value, ConsoleColor.DarkRed);
             GameOver();
         }
         else
@@ -174,6 +205,8 @@ public class Game
 
     public static void NewGame()
     {
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.BackgroundColor = ConsoleColor.Black;
         Console.Clear();
         int width;
         int height;
@@ -220,7 +253,9 @@ public class Game
     public void GameOver()
     {
         _stop = true;
-        Console.SetCursorPosition(_width+1, 1);
+        _gameover = true;
+        Console.SetCursorPosition(_width*2+1, 1);
+        Console.ForegroundColor = ConsoleColor.White;
         Console.Write("Game is over! If you wish to restart, press R");
     }
 
@@ -228,10 +263,10 @@ public class Game
     {
         while (!_gameover)
         {
-            while (!_stop)
+            if (!_stop)
             {
                 NextPosition();
-                Thread.Sleep(100);
+                Thread.Sleep((int)(100/_gamespeed));
             }
         }
     }
