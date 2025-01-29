@@ -1,1 +1,1 @@
-Just a repository for practicing purpoess, nothing special/interesting really.
+Random codes that I've written for practice.
