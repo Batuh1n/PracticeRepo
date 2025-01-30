@@ -1,4 +1,4 @@
-namespace NO2_SnakeGame;
+namespace SnakeGame;
 
 public static class CleanConsole
 {

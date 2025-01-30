@@ -2,7 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "N01_ScienceCalc", "October2024\N01_ScienceCalc\N01_ScienceCalc.csproj", "{38233C24-2C0E-4ABE-9444-BB54D4E93C96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NO2_SnakeGame", "N1001October2024\NO2_SnakeGame\NO2_SnakeGame.csproj", "{3ED93F3B-9EBA-4159-9F98-D40498B41DEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeGame", "N1001October2024\SnakeGame\SnakeGame.csproj", "{3ED93F3B-9EBA-4159-9F98-D40498B41DEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningCsharp", "LearningCsharp\LearningCsharp.csproj", "{936931AD-5A72-4405-AE3E-012C238F7023}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningMoreCsharp", "LearningMoreCsharp\LearningMoreCsharp.csproj", "{76CB56ED-978D-4722-8A40-99BEB852057C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +22,13 @@ Global
 		{3ED93F3B-9EBA-4159-9F98-D40498B41DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ED93F3B-9EBA-4159-9F98-D40498B41DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ED93F3B-9EBA-4159-9F98-D40498B41DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{936931AD-5A72-4405-AE3E-012C238F7023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{936931AD-5A72-4405-AE3E-012C238F7023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{936931AD-5A72-4405-AE3E-012C238F7023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{936931AD-5A72-4405-AE3E-012C238F7023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CB56ED-978D-4722-8A40-99BEB852057C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CB56ED-978D-4722-8A40-99BEB852057C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CB56ED-978D-4722-8A40-99BEB852057C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CB56ED-978D-4722-8A40-99BEB852057C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

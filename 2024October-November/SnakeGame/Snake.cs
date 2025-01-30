@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace NO2_SnakeGame;
+namespace SnakeGame;
 
 using System;
 
@@ -31,7 +31,7 @@ public class Game
     private LinkedList<Coord> _snakeCoords;
     private Coord _foodposition;
     public int Score;
-    private float _gamespeed;
+    readonly private float _gamespeed;
 
     private readonly Dictionary<ConsoleKey, Coord> _movementKeys = new()
     {
@@ -55,6 +55,7 @@ public class Game
         Update();
     }
     
+
     public void SetGrid()
     {
         Console.Clear();
@@ -84,8 +85,8 @@ public class Game
         }
     }
 
-    private Thread InputHandler() =>
-        new(() =>
+    private Thread InputHandler() => 
+        new(() => 
         {
             while (!_gameover)
             {
@@ -180,7 +181,7 @@ public class Game
         }
         _snakeCoords.AddFirst(_snakeCoords.First.Value + _cdirection);
         if (_snakeCoords.First.Value.X <= 0 || _snakeCoords.First.Value.X >= _width-1||
-            _snakeCoords.First.Value.Y <= 0 || _snakeCoords.First.Value.Y >= _height)
+            _snakeCoords.First.Value.Y <= 0 || _snakeCoords.First.Value.Y >= _height-1)
         {
             Drawing.DrawSn(_snakeCoords.First.Value, ConsoleColor.DarkRed);
             GameOver();
@@ -212,14 +213,14 @@ public class Game
         int height;
         float gamespeed;
         Console.Write(
-            "Choose width and height and gamespeed for a new game. Higher the game speed, the faster the game becomes. Width and height cannot be lower than 5 or greater than 100.");
-        Console.Write("\nDefault=\n");
+            "Choose width and height and gamespeed for a new game. Higher the game speed value is, the faster the game becomes. Width and height cannot be lower than 5 or higher than 50.");
+        Console.Write("\nDefault gamespeed is 1\n");
         Console.Write("Width:");
-        while (!int.TryParse(Console.ReadLine(), out width) || width < 5 || width > 100)
+        while (!int.TryParse(Console.ReadLine(), out width) || width < 5 || width > 50)
         {
             Console.SetCursorPosition(0, 4);
             Console.WriteLine(
-                "That's invalid. It is either not greater than 5, lower than 100 or just not a number."); //line4 
+                "That's invalid. It is either not higher than 5, lower than 100 or just not a number."); //line4 
             Console.SetCursorPosition(6, 3); //line 3 (width)
             CleanConsole.ClearConsoleLine(6);
         }
@@ -227,10 +228,10 @@ public class Game
         Console.SetCursorPosition(0, 4);
         CleanConsole.ClearConsoleLine();
         Console.Write("Height:"); //line 4
-        while (!int.TryParse(Console.ReadLine(), out height) || height < 5 || height > 100)
+        while (!int.TryParse(Console.ReadLine(), out height) || height < 5 || height > 50)
         {
             Console.SetCursorPosition(0, 5);
-            Console.WriteLine("That's invalid. It is either not greater 5 or just not a number."); //line 5
+            Console.WriteLine("That's invalid. It is either not higher 5, lower than 100 or just not a number."); //line 5
             Console.SetCursorPosition(7, 4); //line 4 (height)
             CleanConsole.ClearConsoleLine(7);
         }
@@ -242,12 +243,11 @@ public class Game
                gamespeed > 20)
         {
             Console.SetCursorPosition(0, 6);
-            Console.WriteLine("That's invalid. It is either lower than 0.1, greater than 20 or just not a number.");
+            Console.WriteLine("That's invalid. It is either lower than 0.1, higher than 20 or just not a number.");
             Console.SetCursorPosition(10, 5);
             CleanConsole.ClearConsoleLine(10);
         }
-        Console.Clear();
-        Game game = new Game(width, height, gamespeed);
+        Game newgame = new Game(width, height, gamespeed);
     }
     
     public void GameOver()
