@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeGame", "N1001October20
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningCsharp", "LearningCsharp\LearningCsharp.csproj", "{936931AD-5A72-4405-AE3E-012C238F7023}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningMoreCsharp", "LearningMoreCsharp\LearningMoreCsharp.csproj", "{76CB56ED-978D-4722-8A40-99BEB852057C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheCsharpPlayersGuide", "TheCsharpPlayersGuide\TheCsharpPlayersGuide.csproj", "{76CB56ED-978D-4722-8A40-99BEB852057C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

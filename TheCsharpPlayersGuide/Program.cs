@@ -161,8 +161,15 @@ class Program
     static void Main()
     {
 
-        TicTacToe newGame = new TicTacToe();
-        newGame.InitiateRound();
+        Pack inventory = new Pack(30, 30, 4);
+        Rope rope = new Rope(5, 5);
+        Sword sword = new Sword(10, 15);
+        Sword sword2 = new Sword(10, 15);
+        Console.WriteLine(inventory.Add(sword));
+        Console.WriteLine(inventory.Add(rope));
+        Console.WriteLine(inventory.Add(sword2));
+        Console.WriteLine($"{sword2.Volume} {sword2.Volume} {rope.Volume} {inventory.MaxVolume}");
+        Console.ReadKey();
         
         //'Start' being the starting number, it counts downwards till it's reached 1.
         void CountDownwards(int start)
