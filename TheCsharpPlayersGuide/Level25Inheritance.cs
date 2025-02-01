@@ -1,5 +1,6 @@
 namespace ConsoleApp1;
 
+// small part of Level 26 - Polymorphism
 public class InventoryItem
 {
     public int Weight { get; protected set; }
@@ -30,6 +31,8 @@ public class Rope : InventoryItem
     {
         
     }
+
+    public override string ToString() => "Rope";
 }
 
 public class Sword : InventoryItem
@@ -44,6 +47,8 @@ public class Sword : InventoryItem
     {
 
     }
+    
+    public override string ToString() => "Sword";
 }
 
 public class Pack
@@ -67,6 +72,18 @@ public class Pack
         MaxVolume = maxVolume;
         Package = new InventoryItem[maxItems];
         MaxItems = maxItems;
+    }
+
+    public override string ToString()
+    {
+        string content = "Pack containing";
+
+        foreach (InventoryItem item in Package)
+        {
+            content += " " + item.ToString();
+        }
+        
+        return content;
     }
 
     public bool Add(InventoryItem item)
