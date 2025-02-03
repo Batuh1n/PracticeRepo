@@ -71,7 +71,7 @@ public class WestCommand : RobotCommand
     }
 }
 
-/*
+/* (For main)
 Robot robot1 = new Robot();
 Console.WriteLine("Enter 3 commands for the robot to run.\nOn\nOff\nGo south/north/east/west");
 string[] inputs = new string[3] { Console.ReadLine().ToLower(), Console.ReadLine().ToLower(), Console.ReadLine().ToLower() };
@@ -110,4 +110,23 @@ foreach (string input in inputs)
     }
 }
 robot1.Run();
+*/
+
+// I think the code on the top could definitely be shorter. Here is what the author's code looks like:
+/*
+ 
+for(int index = 0; index < robot.Commands.Length; index++)
+{
+    string? input = Console.ReadLine();
+    robot.Commands[index] = input switch
+    {
+        "on" => new OnCommand(),
+        "off" => new OffCommand(),
+        "north" => new NorthCommand(),
+        "south" => new SouthCommand(),
+        "east" => new EastCommand(),
+        "west" => new WestCommand(),
+    };
+}
+
 */

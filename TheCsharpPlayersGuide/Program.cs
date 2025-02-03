@@ -161,7 +161,6 @@ class Program
     static void Main()
     {
         
-        
         //'Start' being the starting number, it counts downwards till it's reached 1.
         void CountDownwards(int start)
         {
