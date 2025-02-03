@@ -13,7 +13,8 @@ public struct Coordinate
         Y = y;
     }
 
-    public bool CheckAdjacent(Coordinate otherCoord)
+    // https://csharpplayersguide.com/solutions/5th-edition/room-coordinates
+    public bool CheckAdjacent(Coordinate otherCoord) // Author has a static one, it's slightly different 
     {
         if (Math.Abs(X - otherCoord.X) == 1) return true;
         if (Math.Abs(Y - otherCoord.X) == 1) return true;
