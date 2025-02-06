@@ -31,7 +31,7 @@ public class TheFountainOfObjects
         CurrentPosition = new Point(0, 0);
     }
 
-    public bool ValidMove(Point p)
+    private bool ValidMove(Point p)
     {
         bool isValid = false;
         if (Math.Abs(CurrentPosition.X - p.X) == 1 && p.Y - CurrentPosition.Y == 0) isValid = true;
@@ -39,12 +39,32 @@ public class TheFountainOfObjects
         if (p.X > GridSize.X || p.Y > GridSize.Y) isValid = false;
         return isValid;
     }
-    
 
-    public void MoveNorth() => CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
-    public void MoveSouth() => CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y - 1);
-    public void MoveEast() => CurrentPosition = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
-    public void MoveWest() => CurrentPosition = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
+    private void CheckAndCall(string input)
+    {
+        if (input == "see") Console.WriteLine(CurrentRoom.SeeSense);
+        if (input == "hear") Console.WriteLine(CurrentRoom.HearSense);
+        if (input == "smell") Console.WriteLine(CurrentRoom.SmellSense);
+        if (input == "move west") MoveWest();
+        if (input == "move north") MoveNorth();
+        if (input == "move east") MoveEast();
+        if (input == "move south") MoveSouth();
+    }
+    private void MoveNorth() => CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
+    private void MoveSouth() => CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y - 1);
+    private void MoveEast() => CurrentPosition = new Point(CurrentPosition.X - 1, CurrentPosition.Y);
+    private void MoveWest() => CurrentPosition = new Point(CurrentPosition.X + 1, CurrentPosition.Y);
+
+    public void OneRound()
+    {
+        Console.WriteLine($"You are in the room at {CurrentPosition.X}th Row, {CurrentPosition.Y}th Column");
+        Console.WriteLine("What do you wish to do?");
+        string choice = Console.ReadLine().ToLower();
+        if (choice == "see") Console.WriteLine(CurrentRoom.SeeSense);
+        if (choice == "hear") Console.WriteLine(CurrentRoom.HearSense);
+        if (choice == "smell") Console.WriteLine(CurrentRoom.SmellSense);
+    }
+    
     
 }
 
