@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp1;
+﻿using System.Drawing;
+
+namespace ConsoleApp1;
 //2025 January
 
 //The C# Player's Guide's first boss battle
@@ -160,7 +162,9 @@ class Program
 {
     static void Main()
     {
-
+        Point newPoint = new(4, 4);
+        TheFountainOfObjects newgame = new(newPoint);
+        newgame.StartAndLoop();
         //'Start' being the starting number, it counts downwards till it's reached 1.
         void CountDownwards(int start)
         {

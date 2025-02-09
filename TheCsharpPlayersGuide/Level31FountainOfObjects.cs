@@ -3,8 +3,9 @@ using Microsoft.VisualBasic;
 
 namespace ConsoleApp1;
 
-// February 4-8th, 2025
-// Expansions: "Small, Medium or Large",
+// February 4-9th, 2025
+// Expansions: "Small, Medium or Large", "Pit"
+// Solution: https://csharpplayersguide.com/solutions/5th-edition/fountain-of-objects-combined
 public class TheFountainOfObjects
 {
     Random random = new();
@@ -14,51 +15,84 @@ public class TheFountainOfObjects
     {
         get => Grid[CurrentPosition.X, CurrentPosition.Y];
     }
+
     public Point CurrentPosition
     {
         get => field;
         set
         {
             if (ValidMove(value)) field = value; // somehow you can't access field if you use "=>" on setter
-            else Console.WriteLine("Can't move there.");
+            else Console.WriteLine("Can't move there. Likely out of bounds.");
         }
     }
-    private FountainRoom Fountain { get; init; }
-    private EntranceRoom Entrance { get; init; }
+
+    private bool _ongoing = true;
+    private FountainRoom Fountain { get; } = new();
+    private EntranceRoom Entrance { get; } = new();
+    private PitRoom Pit { get; } = new();
 
     public TheFountainOfObjects(Point XYSize)
     {
-        Grid = new Room[XYSize.X, XYSize.Y];
+        Grid = new Room[XYSize.X + 1, XYSize.Y + 1];
         GridSize = XYSize;
+        for (int x = 0; x <= GridSize.X; x++)
+        {
+            for (int y = 0; y <= GridSize.Y; y++) Grid[x, y] = new Room();
+        }
         CurrentPosition = new Point(0, 0);
         Grid[random.Next(1, XYSize.X), random.Next(1, XYSize.Y)] = Fountain;
+        bool isOccupied;
+        for (int x = (int)Math.Round((double)(XYSize.X * XYSize.Y / 16)); x <= GridSize.X; x++)
+        {
+            do
+            {
+                isOccupied = false;
+                Point randomLocation = new Point(random.Next(1, XYSize.X), random.Next(1, XYSize.Y));
+                if (Grid[randomLocation.X, randomLocation.Y].GetType() == typeof(Room)) Grid[randomLocation.X, randomLocation.Y] = Pit;
+                else isOccupied = true;
+            } while (isOccupied);
+        }
         Grid[0, 0] = Entrance;
-        for (int i = 0; i < GridSize.X; i++)
-            for (int i2 = 0; i < GridSize.Y; i++)
-                Grid[i, i2] = new Room();
         
     }
 
     private bool ValidMove(Point p)
     {
-        bool isValid = false;
-        if (Math.Abs(CurrentPosition.X - p.X) == 1 && p.Y - CurrentPosition.Y == 0) isValid = true;
-        if (Math.Abs(CurrentPosition.Y - p.Y) == 1 && p.Y - CurrentPosition.Y == 0) isValid = true;
+        bool isValid = true;
         if (p.X > GridSize.X || p.Y > GridSize.Y) isValid = false;
+        if (p.X < 0 || p.Y < 0) isValid = false;
         return isValid;
     }
+
+    private bool CheckForPits()
+    {
+        bool thereIsPit = false;
+        for (int x = CurrentPosition.X - 1; x <= CurrentPosition.X + 1; x++)
+        {
+            for (int y = CurrentPosition.Y - 1; y <= CurrentPosition.Y + 1; y++)
+            {
+                Point coord = new Point(x, y);
+                if (ValidMove(coord) && Grid[coord.X, coord.Y].GetType() == typeof(PitRoom)) thereIsPit = true;
+            }
+        }
+        return thereIsPit;
+    }
     
-    private void CheckAndCall(string input)
+    private bool CheckAndCall(string input)
     {
         if (input == "see") Console.WriteLine(CurrentRoom.SeeSense);
-        if (input == "hear") Console.WriteLine(CurrentRoom.HearSense);
-        if (input == "smell") Console.WriteLine(CurrentRoom.SmellSense);
-        if (input == "move west") MoveWest();
-        if (input == "move north") MoveNorth();
-        if (input == "move east") MoveEast();
-        if (input == "move south") MoveSouth();
-        if (input == "interact") CurrentRoom.Interact();
-        if (input == "interact" && Fountain.FountainOn && CurrentRoom is EntranceRoom) Win();
+        else if (input == "hear") Console.WriteLine(CurrentRoom.HearSense);
+        else if (input == "smell") Console.WriteLine(CurrentRoom.SmellSense);
+        else if (input == "move west" || input == "west") MoveWest();
+        else if (input == "move north" || input == "north") MoveNorth();
+        else if (input == "move east" || input == "east") MoveEast();
+        else if (input == "move south" || input == "south") MoveSouth();
+        else if (input == "interact") CurrentRoom.Interact();
+        else if (input == "interact" && Fountain.FountainOn && CurrentRoom is EntranceRoom) Win();
+        else Console.WriteLine("Invalid command");
+        if (input == "move west" || input == "move north" || input == "move east" || input == "move south"
+            || input == "west" || input == "north" || input == "east" || input == "south") return true;
+        return false;
     }
     private void MoveNorth() => CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y + 1);
     private void MoveSouth() => CurrentPosition = new Point(CurrentPosition.X, CurrentPosition.Y - 1);
@@ -69,28 +103,55 @@ public class TheFountainOfObjects
     private void OneRound()
     {
         Console.WriteLine("----------------------------------------------------------------------------------");
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine($"You are in the room at {CurrentPosition.X}th Row, {CurrentPosition.Y}th Column");
-        Console.WriteLine("What do you wish to do?"); // You don't usually smell and hear manually in IRL but here, you do.
-        string choice = Console.ReadLine().ToLower();
-        CheckAndCall(choice);
+        Console.ForegroundColor = ConsoleColor.Green; 
+        if (CurrentRoom.HearSense != "You don't hear anything.") Console.WriteLine(CurrentRoom.HearSense);
+        else if (CurrentRoom.SmellSense != "You don't smell anything.") Console.WriteLine(CurrentRoom.SmellSense);
+        else if (CurrentRoom.SeeSense != "You don't see much.") Console.WriteLine(CurrentRoom.SeeSense); 
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("You don't notice anything interesting in this room");
+        }
+
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        if (CheckForPits()) Console.WriteLine("You feel a draft. There is a pit in a nearby room.");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("What do you wish to do?");
+        Console.ForegroundColor = ConsoleColor.White;
+        string choice;
+        do
+        {
+            choice = Console.ReadLine().ToLower();
+        } while (!CheckAndCall(choice));
     }
 
     public void StartAndLoop()
     {
         Console.WriteLine("You are in a cavern full of rooms. You have to find the fountain and turn it on to leave.");
-        Console.WriteLine("Valid inputs: see, hear, smell, move west/south/north/east");
+        Console.WriteLine("Valid inputs: see, hear, smell, move west/south/north/east, interact (interact with-");
+        Console.WriteLine("whatever is in the room.");
         Console.ReadKey();
-        bool gameLoop = true;
-        while (gameLoop)
+        while (_ongoing)
         {
             OneRound();
-            
+            if (CurrentRoom is PitRoom) Lose();
         }
     }
 
-    public void Win()
+    private void Win()
     {
-        // win blah blah
+        _ongoing = false;
+        Console.WriteLine("You win!!!");
+        Console.ReadKey();
+    }
+
+    private void Lose()
+    {
+        _ongoing = false;
+        Console.WriteLine("You lose.");
+        Console.ReadKey();
     }
 }
 
@@ -102,7 +163,7 @@ public class Room
 
     public virtual void Interact()
     {
-        
+        Console.WriteLine("There is nothing to interact with in this room.");
     }
 }
 
@@ -110,6 +171,11 @@ public class EntranceRoom : Room
 {
     public override string SeeSense { get; init; } =
         "You see light in this room coming from outside the cavern. This is the entrance.";
+
+    public override void Interact()
+    {
+        
+    }
 }
 
 public class FountainRoom : Room
@@ -128,4 +194,10 @@ public class FountainRoom : Room
         FountainOn = !FountainOn;
     }
 }
+
+public class PitRoom : Room
+{
+    
+}
+
 
