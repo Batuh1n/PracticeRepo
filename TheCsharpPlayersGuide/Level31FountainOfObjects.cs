@@ -6,6 +6,8 @@ namespace ConsoleApp1;
 // February 4-9th, 2025
 // Expansions: "Small, Medium or Large", "Pit"
 // Solution: https://csharpplayersguide.com/solutions/5th-edition/fountain-of-objects-combined
+//
+// Author's solution is definitely better. I probably should've used interfaces more.
 public class TheFountainOfObjects
 {
     Random random = new();
