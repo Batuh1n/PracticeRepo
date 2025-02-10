@@ -1,5 +1,4 @@
 using System.Drawing;
-using Microsoft.VisualBasic;
 
 namespace ConsoleApp1;
 

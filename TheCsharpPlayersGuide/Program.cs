@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
-
+using McDroid;
+using IField;
 namespace ConsoleApp1;
 //2025 January
 
@@ -162,9 +163,7 @@ class Program
 {
     static void Main()
     {
-        Point newPoint = new(4, 4);
-        TheFountainOfObjects newgame = new(newPoint);
-        newgame.StartAndLoop();
+        
         //'Start' being the starting number, it counts downwards till it's reached 1.
         void CountDownwards(int start)
         {
