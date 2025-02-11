@@ -40,6 +40,23 @@ public static class SaferNumberCrunching
 
         return result;
     }
-    
-    
+}
+
+public static class BetterRandom
+{
+    public static double NextDouble(this Random random, double max = 1)
+    => random.NextDouble() * max;
+
+    public static string RandomString(this Random random, params string[] inputs)
+    => inputs[random.Next(0, inputs.Length - 1)];
+
+    public static bool CoinToss(this Random random, uint trueChance, uint falseChance)
+    {
+        double randomNumber = random.Next(0, 100);
+        if (randomNumber * (trueChance + falseChance) / 2 <= 50 * trueChance) return true;
+        return false;
+    }
+    // seems like author made a simple
+    //   public static bool CoinFlip(this Random random, double probabilityOfHeads = 0.5) => random.NextDouble() < probabilityOfHeads;
+    // but, what if they enter more than 1? Mine handles all of that.
 }
