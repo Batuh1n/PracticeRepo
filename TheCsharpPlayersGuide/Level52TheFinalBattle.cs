@@ -5,12 +5,10 @@ public class GameRPG
     List<ICharacter> Heroes { get; set; } = new List<ICharacter>();
     List<ICharacter> Monsters { get; set; } = new List<ICharacter>();
 
-    public void Temp()
+
+    public void Start()
     {
-        Skeleton skeleton = new Skeleton();
-        Heroes.Add(skeleton);
-        Monsters.Add(skeleton);
-        while(true) Round();
+        
     }
     public void Round()
     {
@@ -49,6 +47,7 @@ public interface ICharacter
     public static Random Rand { get; } = new Random();
     int HP { get; }
     string Name { get; init; }
+    Player Controller { get; init; }
 
 
     public ActionResult PickAction(List<ICharacter> characters);
@@ -56,30 +55,25 @@ public interface ICharacter
 }
 public enum ActionTypes { Nothing, SimpleAttack}
 
-public class Player : ICharacter
+public class TrueProgrammer : ICharacter
 {
-    public int HP { get; set; } = 100;
+    public int HP { get; private set; } = 50;
     public string Name { get; init; }
+    public Player Controller { get; init; }
+
     public ActionResult PickAction(List<ICharacter> characters)
     {
-        return new ActionResult();
+        return null;
     }
-
-    public void TakeDamage(int damage)
-    {
-        
-    }
-
-    public Player(string name)
-    {
-        Name = name;
-    }
+    public void TakeDamage(int damage) => HP -= damage;
 }
 public class Skeleton : ICharacter
 {
     public int HP { get; private set; } = 20;
     public string Name { get; init; } = "SKELETON";
+    public Player Controller { get; init; }
 
+    public Skeleton(Player controller) => Controller = controller;
     public ActionResult PickAction(List<ICharacter> characters)
     {
         ActionResult result = new() { Actor = this };
@@ -102,6 +96,24 @@ public class Skeleton : ICharacter
         character.TakeDamage(2);
     } 
     public void TakeDamage(int damage) => HP -= damage;
+}
+
+public class Player
+{
+    public bool BotControlled { get; private set; }
+
+    public int ReturnInput(uint amountOfChoices, string choiceInfo = null)
+    {
+        if (BotControlled) return ICharacter.Rand.Next(0, (int)amountOfChoices);
+        Console.WriteLine(choiceInfo);
+        int choiceIpnut = Convert.ToInt32(Console.ReadLine());
+        while (!(choiceIpnut <= amountOfChoices && choiceIpnut > 0))
+        {
+            Console.WriteLine("Not a valid input!");
+            choiceIpnut = Convert.ToInt32(Console.ReadLine());
+        }
+        return choiceIpnut;
+    }
 }
 
 public class ActionResult
