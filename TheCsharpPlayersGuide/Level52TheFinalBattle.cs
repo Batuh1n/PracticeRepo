@@ -101,7 +101,8 @@ public class Skeleton : ICharacter
 public class Player
 {
     public bool BotControlled { get; private set; }
-
+    
+    public Player (bool botControlled) => BotControlled = botControlled;
     public int ReturnInput(uint amountOfChoices, string choiceInfo = null)
     {
         if (BotControlled) return ICharacter.Rand.Next(0, (int)amountOfChoices);
