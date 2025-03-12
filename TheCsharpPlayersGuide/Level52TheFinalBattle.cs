@@ -80,7 +80,6 @@ public class TrueProgrammer : ICharacter
         }
         return result;
     }
-    public void TakeDamage(int damage) => CurrentHP -= damage;
 
     public void SimpleAttack(ICharacter character, ActionResult result)
     {
@@ -89,6 +88,12 @@ public class TrueProgrammer : ICharacter
         result.Actor = character;
         result.DamageDealt = 1;
         character.TakeDamage(result.DamageDealt);
+    }
+    
+    public void TakeDamage(int damage)
+    {
+        if (CurrentHP - damage < 0) CurrentHP = 0;
+        CurrentHP -= damage;
     }
 }
 public class Skeleton : ICharacter
@@ -122,8 +127,13 @@ public class Skeleton : ICharacter
         result.Actor = character;
         result.DamageDealt = ICharacter.Rand.Next(0, 1);
         character.TakeDamage(result.DamageDealt);
-    } 
-    public void TakeDamage(int damage) => CurrentHP -= damage;
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (CurrentHP - damage < 0) CurrentHP = 0;
+        CurrentHP -= damage;
+    }
 }
 
 public class Player
