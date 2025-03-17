@@ -1,22 +1,62 @@
+using System.Globalization;
+
 namespace ConsoleApp1;
 
 public class GameRPG
 {
     List<ICharacter> Heroes { get; set; } = new List<ICharacter>();
     List<ICharacter> Monsters { get; set; } = new List<ICharacter>();
-
-
+    Player HeroPlayer { get; set; }
+    Player MonstersPlayer { get; set; }
+    public uint RoundNum { get; private set; }
+    
     public void Start()
     {
+        Console.WriteLine("Should the player of Heroes be AI controlled? \n0: Player\n 1: An AI");
+        if (Console.ReadKey().KeyChar == '0') HeroPlayer = new(false);
+        else HeroPlayer = new(true);
+        Console.WriteLine("Should the player of Monsters be AI controlled? \n0: Player\n 1: An AI");
+        if (Console.ReadKey().KeyChar == '0') MonstersPlayer = new(false);
+        else MonstersPlayer = new(true);
         
+        StartGameLoop();
     }
-    public void Round() // TODO
+
+    public void StartGameLoop()
+    {
+        while (true)
+        {
+            RoundNum++;
+            Monsters = RoundProgressEnemy(RoundNum);
+            while (true)
+            {
+                Round();
+                if (Heroes.Count == 0 || Monsters.Count == 0) break;
+            }
+
+            if (Heroes.Count == 0)
+            {
+                Console.WriteLine("The heroes have lost!");
+                return;
+            }
+
+            if (Monsters.Count == 0)
+            {
+                Console.WriteLine("The monsters have been defeated, and a new battle shall bagin!");
+            }
+        }
+    }
+    public void Round()
     {
         foreach (ICharacter hero in Heroes)
         {
             Console.WriteLine($"It is {hero.Name}'s turn...");
-            Thread.Sleep(ICharacter.Rand.Next(400, 1700));
-            //DisplayInfo(hero.PickAction(Monsters));
+            if (hero.Controller.BotControlled)Thread.Sleep(ICharacter.Rand.Next(400, 1700));
+            hero.PickAction(Monsters).DisplayInfo();
+            
+            var MonsterRemoval = Monsters.Where(m => m.CurrentHP <= 0).ToList();
+            foreach  (var monster in MonsterRemoval) Monsters.Remove(monster);
+            
             Thread.Sleep(500);
             Console.WriteLine();
         }
@@ -25,22 +65,42 @@ public class GameRPG
         {
             Console.WriteLine($"It is {monster.Name}'s turn...");
             Thread.Sleep(ICharacter.Rand.Next(400, 1700));
-            //DisplayInfo(monster.PickAction(Heroes));
+            monster.PickAction(Heroes).DisplayInfo();
+            
+            var MonsterRemoval = Heroes.Where(m => m.CurrentHP <= 0).ToList();
+            foreach  (var hero in MonsterRemoval) Heroes.Remove(hero);
+            
             Thread.Sleep(500);
             Console.WriteLine();
         }
     }
     
     
-    public void PartyInfo(ICharacter player)
+    private List<ICharacter> RoundProgressEnemy(uint round)
+        => round switch
+        {
+            1 => new List<ICharacter>() { new Skeleton(MonstersPlayer)},
+            2 => new List<ICharacter>() { new Skeleton(MonstersPlayer), new Skeleton(MonstersPlayer)},
+        };
+    
+    public void PartyInfo()
     {
-        if (Heroes.Contains(player)) 
-            foreach (ICharacter monster in Monsters) Console.WriteLine($"{Monsters.BinarySearch(monster)}: {monster.Name}" +
-                                                                       $"({monster.CurrentHP} HP)");
-
-        if (Monsters.Contains(player)) 
-            foreach(ICharacter hero in  Heroes) Console.WriteLine($"{Monsters.BinarySearch(hero)}: {hero.Name}" +
-                                                                  $"({hero.CurrentHP} HP)");
+        var Current = Console.GetCursorPosition();
+        
+        Console.WriteLine("HEROES");
+        int longest = 0, height = 1;
+        foreach (var hero in Heroes)
+        {
+            height++;
+            string info = $"{Heroes.BinarySearch(hero)}: {hero.Name} ({hero.CurrentHP}/{hero.MaxHP})";
+            if (info.Length > longest) longest = info.Length;
+            Console.WriteLine(info);
+        }
+        // TODO
+        foreach (var monster in Monsters)
+        {
+            
+        }
     }
 }
 public interface ICharacter
@@ -63,8 +123,12 @@ public class TrueProgrammer : ICharacter
     public int CurrentHP { get; private set; } = 25;
     public string Name { get; init; }
     public Player Controller { get; init; }
-    
-    public TrueProgrammer(string name) => Name = name;
+
+    public TrueProgrammer(Player player, string name)
+    {
+        Name = name;
+        Controller = player;
+    }
 
     public ActionResult PickAction(List<ICharacter> characters)
     {
